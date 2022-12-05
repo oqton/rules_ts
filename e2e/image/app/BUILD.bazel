@@ -1,5 +1,8 @@
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
+load("//:js_image_layer.bzl", "js_image_layer")
 
 ts_project(
     name = "app-ts",
@@ -19,4 +22,31 @@ js_binary(
         ":app-ts",
     ],
     entry_point = "main.js",
+)
+
+js_image_layer(
+    name = "layers",
+    binary = ":app",
+    root = "/app",
+)
+
+container_layer(
+    name = "app_layer",
+    tars = [":layers/app.tar"],
+)
+
+container_layer(
+    name = "node_modules_layer",
+    tars = [":layers/node_modules.tar"],
+)
+
+container_image(
+    name = "image",
+    base = "@ubuntu_focal//image",
+    cmd = ["/app/app/app.sh"],
+    entrypoint = ["bash"],
+    layers = [
+        ":app_layer",
+        ":node_modules_layer",
+    ],
 )
