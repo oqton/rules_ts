@@ -1,0 +1,20 @@
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+
+ts_project(
+    name = "lib1-ts",
+    srcs = ["index.ts"],
+    deps = [
+        "//:node_modules/ts-md5",
+    ],
+    declaration = True,
+    tsconfig = {},
+    extends = "//:tsconfig",
+)
+
+npm_package(
+    name = "lib1",
+    srcs = [":lib1-ts"],
+    package = "@oqton/lib1",
+    visibility = ["//visibility:public"],
+)

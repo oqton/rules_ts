@@ -1,0 +1,22 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+
+ts_project(
+    name = "app-ts",
+    srcs = ["main.ts"],
+    deps = [
+        "//:node_modules/@oqton/lib1",
+        "//:node_modules/@types/node",
+    ],
+    declaration = True,
+    tsconfig = {},
+    extends = "//:tsconfig",
+)
+
+js_binary(
+    name = "app",
+    data = [
+        ":app-ts",
+    ],
+    entry_point = "main.js",
+)
